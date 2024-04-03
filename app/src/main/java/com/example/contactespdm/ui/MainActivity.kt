@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(amb.root)
-
         fillContacts()
 
         amb.contactesLv.adapter = contactAdapter
