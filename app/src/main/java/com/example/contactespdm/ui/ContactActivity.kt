@@ -15,7 +15,6 @@ class ContactActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(acb.root)
-
         val receivedContact = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
             intent.getParcelableExtra("EXTRA_CONTACT",Contact::class.java)
         }
@@ -23,7 +22,6 @@ class ContactActivity : AppCompatActivity() {
         {
             intent.getParcelableExtra<Contact>("EXTRA_CONTACT")
         }
-
 
         with(acb) {
             receivedContact?.let {
