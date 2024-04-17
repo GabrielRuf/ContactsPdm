@@ -1,14 +1,12 @@
 package com.example.contactespdm.ui
-
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.contactespdm.Constantes.Name
-import com.example.contactespdm.Constantes.Address
-import com.example.contactespdm.Constantes.Phone
-import com.example.contactespdm.Constantes.Email
+import android.view.View
 
 import com.example.contactespdm.databinding.ActivityContactBinding
+import com.example.contactespdm.model.Contact
 
 class ContactActivity : AppCompatActivity() {
     private val acb: ActivityContactBinding by lazy{
@@ -17,32 +15,47 @@ class ContactActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(acb.root)
-        intent.getStringExtra(Name)?.let{
-            acb.nameEt.setText(it)
+
+        val receivedContact = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            intent.getParcelableExtra("EXTRA_CONTACT",Contact::class.java)
         }
-        intent.getStringExtra(Address)?.let{
-            acb.addressEt.setText(it)
-        }
-        intent.getStringExtra(Phone)?.let{
-            acb.phoneEt.setText(it)
-        }
-        intent.getStringExtra(Email)?.let{
-            acb.emailEt.setText(it)
+        else
+        {
+            intent.getParcelableExtra<Contact>("EXTRA_CONTACT")
         }
 
-        acb.saveBt.setOnClickListener {
-            val name = acb.nameEt.text
-            val phone = acb.phoneEt.text
-            val email = acb.emailEt.text
-            val address = acb.addressEt.text
 
-            val result_intent = Intent()
-            result_intent.putExtra(Name,name)
-            result_intent.putExtra(Email,email)
-            result_intent.putExtra(Address,address)
-            result_intent.putExtra(Phone,phone)
-            setResult(RESULT_OK,result_intent)
-
+        with(acb) {
+            receivedContact?.let {
+                nameEt.setText(receivedContact.name)
+                addressEt.setText(receivedContact.address)
+                phoneEt.setText(receivedContact.phone)
+                emailEt.setText(receivedContact.email)
+                if (intent.getBooleanExtra("EXTRA_VIEW_CONTACT",false)){
+                    nameEt.isEnabled = false
+                    addressEt.isEnabled = false
+                    phoneEt.isEnabled = false
+                    emailEt.isEnabled = false
+                    saveBt.visibility = View.GONE
+                }
+            }
+            saveBt.setOnClickListener{
+                Contact(
+                    id = receivedContact?.id?:hashCode(),
+                    name = nameEt.text.toString(),
+                    address = addressEt.text.toString(),
+                    phone = phoneEt.text.toString(),
+                    email = emailEt.text.toString()
+                ).let {
+                    contact ->
+                    Intent().apply {
+                        putExtra("EXTRA_CONTACT",contact)
+                        setResult(RESULT_OK,this)
+                        finish()
+                    }
+                }
+            }
         }
+
     }
 }

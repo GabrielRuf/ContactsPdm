@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ContactesPdm</string>
+    <string name="edit_contact">Edit contact</string>
+    <string name="remove_contact">Remove contact</string>
 </resources>
